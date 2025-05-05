@@ -91,15 +91,18 @@
     }
     #animationScreen {
       display: none;
-      text-align: center;
-      padding: 50px;
-      font-size: 2.5em;
-      color: #6ec1ff;
-      animation: pulse 1s infinite;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: radial-gradient(circle, rgba(94, 23, 115, 0.5) 30%, rgba(94, 23, 115, 0) 70%);
+      animation: pulse 3s ease-out infinite;
+      opacity: 0.8;
     }
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.7; }
+      50% { transform: scale(1.1); opacity: 0.5; }
       100% { transform: scale(1); opacity: 1; }
     }
 
@@ -134,23 +137,30 @@
     <button onclick="startAnimation()">Enter</button>
   </div>
 
-  <div id="animationScreen">
-    <p>Hollow Purple...</p>
-  </div>
+  <div id="animationScreen"></div>
 
   <div id="mainContent">
     <h1>Six Eyes Training</h1>
     <h3 id="quoteDisplay" style="color:#87ceeb;"></h3>
     <h2>Welcome, <span id="displayUsername"></span></h2>
 
-    <div class="stats">
-      <div class="stat"><h3>STR</h3><p id="stat-str">10</p></div>
-      <div class="stat"><h3>STA</h3><p id="stat-sta">10</p></div>
-      <div class="stat"><h3>COM</h3><p id="stat-com">10</p></div>
-      <div class="stat"><h3>INT</h3><p id="stat-int">10</p></div>
-      <div class="stat"><h3>FOC</h3><p id="stat-foc">10</p></div>
+    <!-- Stats, Level, XP, and Title -->
+    <div class="section">
+      <h2>Your Stats & Progress</h2>
+      <div class="stats">
+        <div class="stat"><h3>STR</h3><p id="stat-str">10</p></div>
+        <div class="stat"><h3>STA</h3><p id="stat-sta">10</p></div>
+        <div class="stat"><h3>COM</h3><p id="stat-com">10</p></div>
+        <div class="stat"><h3>INT</h3><p id="stat-int">10</p></div>
+        <div class="stat"><h3>FOC</h3><p id="stat-foc">10</p></div>
+      </div>
+      <div class="xp-bar-container">
+        <div class="xp-bar" id="xpBar"></div>
+      </div>
+      <div class="xp-info" id="xpDisplay">XP: 0 | Level: 1 | Title: Student</div>
     </div>
 
+    <!-- Training Log -->
     <div class="section">
       <h2>Today's Training Log</h2>
       <div class="exercise-log">
@@ -166,14 +176,6 @@
         <label>Plank (Always 100 XP)</label><input type="text" id="plank" />
       </div>
       <button onclick="submitTraining()">Submit Training</button>
-    </div>
-
-    <div class="section">
-      <h2>Your Stats & Progress</h2>
-      <div class="xp-bar-container">
-        <div class="xp-bar" id="xpBar"></div>
-      </div>
-      <div class="xp-info" id="xpDisplay">XP: 0 | Level: 1 | Title: Student</div>
     </div>
   </div>
 
