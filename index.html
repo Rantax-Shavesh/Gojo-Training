@@ -18,42 +18,67 @@
     #usernameScreen.active, #mainContent.active {
       display: block;
     }
+    h1, h2, h3 {
+      text-align: center;
+    }
     h1 {
       color: #6ec1ff;
-      font-size: 2em;
-      text-align: center;
+      font-size: 2.5em;
+    }
+    h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
     }
     .section {
       background-color: #111;
-      margin: 15px auto;
-      padding: 15px;
-      border-radius: 12px;
-      max-width: 600px;
-      box-shadow: 0 0 10px #00f2ff99;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 750px;
+      box-shadow: 0 0 25px #00f2ff55;
     }
-    label, input, select {
+    label {
+      font-weight: bold;
       display: block;
-      margin: 10px 0;
+      margin-top: 10px;
     }
     input[type="text"] {
-      padding: 8px;
+      padding: 10px;
       width: 100%;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 15px;
+      background-color: #222;
+      color: #fff;
     }
-    .exercise-log input {
-      width: 80px;
-      display: inline-block;
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 30px;
+      font-size: 1em;
+      background-color: #00bfff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #0099cc;
     }
     .stats {
       display: flex;
       justify-content: space-around;
-      background: #222;
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px #005a9c;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
     }
     .stat {
+      flex: 1 1 120px;
       text-align: center;
+      padding: 15px;
+      background: #000000cc;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #0077b699 inset;
     }
     .stat h3 {
       margin: 0;
@@ -61,6 +86,21 @@
     }
     .stat p {
       margin: 5px 0 0;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+    #animationScreen {
+      display:none;
+      text-align:center;
+      padding:50px;
+      font-size:2.5em;
+      color:#6ec1ff;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -71,14 +111,14 @@
     <button onclick="startAnimation()">Enter</button>
   </div>
 
-  <div id="animationScreen" style="display:none;text-align:center;padding:50px;font-size:2em;">
+  <div id="animationScreen">
     <p>Hollow Purple...</p>
   </div>
 
   <div id="mainContent">
     <h1>Six Eyes Training</h1>
-    <h3 id="quoteDisplay" style="text-align:center; color:#87ceeb;"></h3>
-    <h2 style="text-align:center;">Welcome, <span id="displayUsername"></span></h2>
+    <h3 id="quoteDisplay" style="color:#87ceeb;"></h3>
+    <h2>Welcome, <span id="displayUsername"></span></h2>
 
     <div class="stats">
       <div class="stat"><h3>STR</h3><p id="stat-str">0</p></div>
@@ -91,19 +131,19 @@
     <div class="section">
       <h2>Today's Training Log</h2>
       <div class="exercise-log">
-        <label>Push-ups (1 STR)</label><input type="text" id="pushups" placeholder="e.g., 100" />
+        <label>Push-ups (1 STR)</label><input type="text" id="pushups" />
         <label>Squats (1 STR)</label><input type="text" id="squats" />
         <label>Crunches (1 STR)</label><input type="text" id="crunches" />
+        <label>Forearm Training (1 STR)</label><input type="text" id="forearm" />
         <label>Punches (1 COM)</label><input type="text" id="punches" />
         <label>Kicks (1 COM)</label><input type="text" id="kicks" />
         <label>1 km Running (2 STA)</label><input type="text" id="running" />
         <label>10 min Meditate (1 FOC)</label><input type="text" id="meditate" />
         <label>10 min Dodge (1 COM)</label><input type="text" id="dodge" />
         <label>Plank (Always 100 XP)</label><input type="text" id="plank" />
-        <label>Forearm Training (1 STR)</label><input type="text" id="forearm" />
       </div>
       <button onclick="submitTraining()">Submit Training</button>
-      <p id="xpDisplay">XP: 0 | Level: 1 | Title: Student</p>
+      <p id="xpDisplay" style="text-align:center; font-size:1.2em; margin-top:15px;">XP: 0 | Level: 1 | Title: Student</p>
     </div>
   </div>
 
@@ -112,7 +152,6 @@
     let level = 1;
     let stats = { STR: 0, STA: 0, COM: 0, INT: 0, FOC: 0 };
     const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level"].concat(Array(91).fill("Ascended"));
-
     const quotes = [
       "Throughout heaven and earth, I alone am the honored one.",
       "I'm the strongest, after all.",
@@ -129,11 +168,15 @@
         document.getElementById("animationScreen").style.display = "block";
         setTimeout(() => {
           document.getElementById("animationScreen").style.display = "none";
-          document.getElementById("mainContent").classList.add("active");
-          document.getElementById("displayUsername").textContent = username;
-          document.getElementById("quoteDisplay").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+          showMainPage(username);
         }, 4000);
       }
+    }
+
+    function showMainPage(username) {
+      document.getElementById("mainContent").classList.add("active");
+      document.getElementById("displayUsername").textContent = username;
+      document.getElementById("quoteDisplay").textContent = quotes[Math.floor(Math.random() * quotes.length)];
     }
 
     function calculateXP() {
@@ -151,6 +194,8 @@
       if (parseInt(dodge.value) >= 10) statGain.COM++;
       if (parseInt(plank.value) > 0) totalXP += 100;
 
+      for (let key in statGain) totalXP += statGain[key] * 50;
+
       return { totalXP, statGain };
     }
 
@@ -160,12 +205,10 @@
       for (let key in result.statGain) {
         stats[key] += result.statGain[key];
       }
-
       while (xp >= level * 100) {
         xp -= level * 100;
         level++;
       }
-
       updateUI();
     }
 
@@ -182,9 +225,11 @@
       const username = localStorage.getItem("username");
       if (username) {
         document.getElementById("usernameScreen").style.display = "none";
-        document.getElementById("mainContent").classList.add("active");
-        document.getElementById("displayUsername").textContent = username;
-        document.getElementById("quoteDisplay").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById("animationScreen").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("animationScreen").style.display = "none";
+          showMainPage(username);
+        }, 4000);
       } else {
         document.getElementById("usernameScreen").classList.add("active");
       }
