@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shadow Training - Gojo Theme</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #ffffff;
+    }
+
+    .hidden { display: none; }
+
+    .centered {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .glow-btn {
+      background: transparent;
+      border: 2px solid #a0c4ff;
+      padding: 10px 20px;
+      color: #a0c4ff;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #a0c4ff;
+      transition: all 0.3s ease;
+    }
+
+    .glow-btn:hover {
+      background: #a0c4ff;
+      color: #000;
+    }
+
+    .purple-animation {
+      width: 100vw; height: 100vh;
+      background: radial-gradient(circle at center, rgba(162,0,255,0.4), #0d0d0d);
+      animation: swirl 3s ease-in-out forwards;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 1000;
+    }
+
+    @keyframes swirl {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    #homePage { padding: 20px; }
+
+    .username-header {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #72aaff;
+      text-shadow: 0 0 10px #72aaff;
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: linear-gradient(145deg, #101010, #1a1a1a);
+      border: 2px solid #72aaff;
+      padding: 10px 15px;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #72aaff;
+      min-width: 120px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Username Entry Page -->
+<div id="usernamePage" class="centered">
+  <h2>Enter Your Username</h2>
+  <input type="text" id="usernameInput" placeholder="ShadowWarrior" />
+  <br><br>
+  <button class="glow-btn" onclick="startTraining()">Begin</button>
+</div>
+
+<!-- Animation -->
+<div id="animation" class="purple-animation hidden"></div>
+
+<!-- Home Page -->
+<div id="homePage" class="hidden">
+  <div class="username-header" id="displayUsername"></div>
+
+  <!-- Stats Section -->
+  <div class="stats-container">
+    <div class="stat">STR: <span id="strStat">0</span></div>
+    <div class="stat">STA: <span id="staStat">0</span></div>
+    <div class="stat">COM: <span id="comStat">0</span></div>
+    <div class="stat">INT: <span id="intStat">0</span></div>
+    <div class="stat">FOC: <span id="focStat">0</span></div>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  function startTraining() {
+    const username = document.getElementById('usernameInput').value.trim();
+    if (username === '') return;
+
+    localStorage.setItem('username', username);
+    localStorage.setItem('seenIntro', 'true');
+
+    document.getElementById('usernamePage').classList.add('hidden');
+    const anim = document.getElementById('animation');
+    anim.classList.remove('hidden');
+
+    setTimeout(() => {
+      anim.classList.add('hidden');
+      document.getElementById('homePage').classList.remove('hidden');
+      document.getElementById('displayUsername').innerText = "Welcome, " + username;
+    }, 3000);
+  }
+
+  window.onload = function () {
+    const savedUser = localStorage.getItem('username');
+    const seenIntro = localStorage.getItem('seenIntro');
+
+    if (savedUser && seenIntro === 'true') {
+      document.getElementById('usernamePage').classList.add('hidden');
+      document.getElementById('homePage').classList.remove('hidden');
+      document.getElementById('displayUsername').innerText = "Welcome back, " + savedUser;
+    }
+  }
+</script>
+
+</body>
+</html>
