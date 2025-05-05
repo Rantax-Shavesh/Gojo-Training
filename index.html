@@ -89,59 +89,35 @@
       font-size: 1.3em;
       font-weight: bold;
     }
-    #animationScreen {
-      display: none;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(circle, #9c27b0, #000);
-      animation: glow 4s ease-in-out forwards;
-    }
-    @keyframes glow {
-      0% {opacity: 0; transform: scale(0.9);}
-      50% {opacity: 1; transform: scale(1.05); box-shadow: 0 0 100px #c158dc88;}
-      100% {opacity: 0; transform: scale(1);}
-    }
-    #xpBarWrapper {
-      width: 100%;
-      background-color: #333;
-      border-radius: 12px;
+    #xpBarContainer {
+      margin: 20px auto;
+      width: 80%;
+      background: #333;
+      border-radius: 15px;
       overflow: hidden;
-      margin-bottom: 10px;
+      box-shadow: 0 0 10px #00bfff;
     }
     #xpBar {
       height: 20px;
-      background-color: #00bfff;
+      background: linear-gradient(to right, #6ec1ff, #0077ff);
       width: 0%;
-      transition: width 0.5s ease;
+      transition: width 0.5s;
     }
   </style>
 </head>
 <body>
-  <div id="usernameScreen" class="active">
-    <h1>Enter Your Username</h1>
-    <input type="text" id="usernameInput" placeholder="Username" />
-    <button onclick="startAnimation()">Enter</button>
-  </div>
-
-  <div id="animationScreen"></div>
-
-  <div id="mainContent">
+  <div id="mainContent" class="active">
     <h1>Six Eyes Training</h1>
-    <h3 id="quoteDisplay" style="color:#87ceeb;"></h3>
-    <h2>Welcome, <span id="displayUsername"></span></h2>
-
     <div class="stats">
-      <div class="stat"><h3>STR</h3><p id="stat-str">10</p></div>
-      <div class="stat"><h3>STA</h3><p id="stat-sta">10</p></div>
-      <div class="stat"><h3>COM</h3><p id="stat-com">10</p></div>
-      <div class="stat"><h3>INT</h3><p id="stat-int">10</p></div>
+      <div class="stat"><h3>STR</h3><p id="stat-str">0</p></div>
+      <div class="stat"><h3>STA</h3><p id="stat-sta">0</p></div>
+      <div class="stat"><h3>COM</h3><p id="stat-com">0</p></div>
+      <div class="stat"><h3>INT</h3><p id="stat-int">0</p></div>
     </div>
-
     <div class="section">
-      <div id="xpBarWrapper"><div id="xpBar"></div></div>
+      <div id="xpBarContainer"><div id="xpBar"></div></div>
       <p id="xpDisplay" style="text-align:center; font-size:1.2em;">XP: 0 | Level: 1 | Title: Student</p>
     </div>
-
     <div class="section">
       <h2>Today's Training Log</h2>
       <div class="exercise-log">
@@ -151,74 +127,77 @@
         <label>Forearm Training (100 for +1 STR)</label><input type="text" id="forearm" />
         <label>Punches (100 for +1 COM)</label><input type="text" id="punches" />
         <label>Kicks (100 for +1 COM)</label><input type="text" id="kicks" />
-        <label>1 km Running (1 units = +1 STA)</label><input type="text" id="running" />
-        <label>10 min Meditate (10 mins = +1 INT)</label><input type="text" id="meditate" />
+        <label>1 km Running (100 for +1 STA)</label><input type="text" id="running" />
+        <label>10 min Meditate (10 for +1 INT)</label><input type="text" id="meditate" />
         <label>10 min Dodge (100 for +1 COM)</label><input type="text" id="dodge" />
-        <label>Plank (Always 100 XP)</label><input type="text" id="plank" />
+        <label>Plank (XP Only)</label><input type="text" id="plank" />
       </div>
       <button onclick="submitTraining()">Submit Training</button>
     </div>
   </div>
-
   <script>
-    let xp = parseFloat(localStorage.getItem("xp")) || 0;
-    let level = parseInt(localStorage.getItem("level")) || 1;
-    let stats = JSON.parse(localStorage.getItem("stats")) || { STR: 10, STA: 10, COM: 10, INT: 10 };
-    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level"].concat(Array(101).fill("Ascended"));
-    const quotes = [
-      "Throughout heaven and earth, I alone am the honored one.",
-      "I'm the strongest, after all.",
-      "When you die, you'll be alone.",
-      "Don't worry, I'm the strongest.",
-      "Let's finish this quickly, I’ve got a class to teach."
-    ];
+    let xp = parseFloat(localStorage.getItem('xp')) || 0;
+    let level = parseInt(localStorage.getItem('level')) || 1;
+    let stats = JSON.parse(localStorage.getItem('stats')) || { STR: 0, STA: 0, COM: 0, INT: 0 };
+    let exerciseProgress = JSON.parse(localStorage.getItem('exerciseProgress')) || { pushups: 0, squats: 0, crunches: 0, forearm: 0, punches: 0, kicks: 0, running: 0, meditate: 0, dodge: 0 };
 
-    function startAnimation() {
-      const username = document.getElementById("usernameInput").value;
-      if (username) {
-        localStorage.setItem("username", username);
-        document.getElementById("usernameScreen").style.display = "none";
-        document.getElementById("animationScreen").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("animationScreen").style.display = "none";
-          showMainPage(username);
-        }, 4000);
-      }
-    }
+    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level", "Ascended"];
 
-    function showMainPage(username) {
-      document.getElementById("mainContent").classList.add("active");
-      document.getElementById("displayUsername").textContent = username;
-      document.getElementById("quoteDisplay").textContent = quotes[Math.floor(Math.random() * quotes.length)];
-      updateUI();
+    function getTitle(level) {
+      if (level >= 100) return "Ascended";
+      if (level >= 90) return "Gojo-Level";
+      if (level >= 80) return "Limitless User";
+      if (level >= 70) return "Hollow Purple Master";
+      if (level >= 60) return "Six Eyes";
+      if (level >= 50) return "Domain User";
+      if (level >= 40) return "Special Grade";
+      if (level >= 30) return "Grade 1";
+      if (level >= 20) return "Semi Grade 1";
+      if (level >= 10) return "First Grade";
+      return "Student";
     }
 
     function submitTraining() {
-      const fields = ["pushups", "squats", "crunches", "forearm", "punches", "kicks", "running", "meditate", "dodge", "plank"];
-      let totalXP = 0;
+      const inputs = ['pushups', 'squats', 'crunches', 'forearm', 'punches', 'kicks', 'running', 'meditate', 'dodge', 'plank'];
+      let gainedXP = 0;
 
-      fields.forEach(id => {
-        const value = parseFloat(document.getElementById(id).value) || 0;
-        totalXP += value * 0.1;
+      inputs.forEach(key => {
+        const value = parseInt(document.getElementById(key).value) || 0;
+        gainedXP += value * 0.1;
+
+        if (key !== 'plank') {
+          exerciseProgress[key] += value;
+        }
       });
 
-      if (parseFloat(pushups.value) >= 100) stats.STR++;
-      if (parseFloat(squats.value) >= 100) stats.STR++;
-      if (parseFloat(crunches.value) >= 100) stats.STR++;
-      if (parseFloat(forearm.value) >= 100) stats.STR++;
-      if (parseFloat(punches.value) >= 100) stats.COM++;
-      if (parseFloat(kicks.value) >= 100) stats.COM++;
-      if (parseFloat(running.value) >= 1) stats.STA++;
-      if (parseFloat(meditate.value) >= 10) stats.INT++;
-      if (parseFloat(dodge.value) >= 100) stats.COM++;
-      if (parseFloat(plank.value) > 0) totalXP += 100;
+      function updateStat(key, required, statKey) {
+        while (exerciseProgress[key] >= required) {
+          stats[statKey]++;
+          exerciseProgress[key] -= required;
+        }
+      }
 
-      xp += totalXP;
+      updateStat('pushups', 100, 'STR');
+      updateStat('squats', 100, 'STR');
+      updateStat('crunches', 100, 'STR');
+      updateStat('forearm', 100, 'STR');
+      updateStat('punches', 100, 'COM');
+      updateStat('kicks', 100, 'COM');
+      updateStat('running', 100, 'STA');
+      updateStat('dodge', 100, 'COM');
+      updateStat('meditate', 10, 'INT');
+
+      xp += gainedXP;
       while (xp >= level * 100) {
         xp -= level * 100;
         level++;
       }
-      saveProgress();
+
+      localStorage.setItem('xp', xp);
+      localStorage.setItem('level', level);
+      localStorage.setItem('stats', JSON.stringify(stats));
+      localStorage.setItem('exerciseProgress', JSON.stringify(exerciseProgress));
+
       updateUI();
     }
 
@@ -227,29 +206,14 @@
       document.getElementById("stat-sta").textContent = stats.STA;
       document.getElementById("stat-com").textContent = stats.COM;
       document.getElementById("stat-int").textContent = stats.INT;
-      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${titles[Math.floor(level / 10)]}`;
-      document.getElementById("xpBar").style.width = `${(xp / (level * 100)) * 100}%`;
+
+      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${getTitle(level)}`;
+
+      let percent = (xp / (level * 100)) * 100;
+      document.getElementById("xpBar").style.width = percent + "%";
     }
 
-    function saveProgress() {
-      localStorage.setItem("xp", xp);
-      localStorage.setItem("level", level);
-      localStorage.setItem("stats", JSON.stringify(stats));
-    }
-
-    window.onload = () => {
-      const username = localStorage.getItem("username");
-      if (username) {
-        document.getElementById("usernameScreen").style.display = "none";
-        document.getElementById("animationScreen").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("animationScreen").style.display = "none";
-          showMainPage(username);
-        }, 4000);
-      } else {
-        document.getElementById("usernameScreen").classList.add("active");
-      }
-    };
+    window.onload = updateUI;
   </script>
 </body>
 </html>
