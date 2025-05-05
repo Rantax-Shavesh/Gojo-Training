@@ -1,144 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shadow Training - Gojo Theme</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #0d0d0d;
-      color: #ffffff;
+      background: linear-gradient(to bottom, #000000, #1a1a1a);
+      color: white;
     }
-
-    .hidden { display: none; }
-
-    .centered {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+    #usernameScreen, #mainContent {
+      display: none;
+      padding: 20px;
+    }
+    #usernameScreen.active, #mainContent.active {
+      display: block;
+    }
+    h1 {
+      color: #6ec1ff;
+      font-size: 2em;
       text-align: center;
     }
-
-    .glow-btn {
-      background: transparent;
-      border: 2px solid #a0c4ff;
-      padding: 10px 20px;
-      color: #a0c4ff;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #a0c4ff;
-      transition: all 0.3s ease;
+    .section {
+      background-color: #111;
+      margin: 15px auto;
+      padding: 15px;
+      border-radius: 12px;
+      max-width: 600px;
+      box-shadow: 0 0 10px #00f2ff99;
     }
-
-    .glow-btn:hover {
-      background: #a0c4ff;
-      color: #000;
+    label, input, select {
+      display: block;
+      margin: 10px 0;
     }
-
-    .purple-animation {
-      width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, rgba(162,0,255,0.4), #0d0d0d);
-      animation: swirl 3s ease-in-out forwards;
-      position: absolute;
-      top: 0; left: 0;
-      z-index: 1000;
+    input[type="text"] {
+      padding: 8px;
+      width: 100%;
     }
-
-    @keyframes swirl {
-      0% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(1); opacity: 0; }
+    .exercise-log input {
+      width: 80px;
+      display: inline-block;
     }
-
-    #homePage { padding: 20px; }
-
-    .username-header {
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #72aaff;
-      text-shadow: 0 0 10px #72aaff;
-    }
-
-    .stats-container {
+    .stats {
       display: flex;
       justify-content: space-around;
-      margin: 20px 0;
-      flex-wrap: wrap;
+      background: #222;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px #005a9c;
     }
-
     .stat {
-      background: linear-gradient(145deg, #101010, #1a1a1a);
-      border: 2px solid #72aaff;
-      padding: 10px 15px;
-      margin: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #72aaff;
-      min-width: 120px;
       text-align: center;
+    }
+    .stat h3 {
+      margin: 0;
+      color: #00bfff;
+    }
+    .stat p {
+      margin: 5px 0 0;
     }
   </style>
 </head>
 <body>
-
-<!-- Username Entry Page -->
-<div id="usernamePage" class="centered">
-  <h2>Enter Your Username</h2>
-  <input type="text" id="usernameInput" placeholder="ShadowWarrior" />
-  <br><br>
-  <button class="glow-btn" onclick="startTraining()">Begin</button>
-</div>
-
-<!-- Animation -->
-<div id="animation" class="purple-animation hidden"></div>
-
-<!-- Home Page -->
-<div id="homePage" class="hidden">
-  <div class="username-header" id="displayUsername"></div>
-
-  <!-- Stats Section -->
-  <div class="stats-container">
-    <div class="stat">STR: <span id="strStat">0</span></div>
-    <div class="stat">STA: <span id="staStat">0</span></div>
-    <div class="stat">COM: <span id="comStat">0</span></div>
-    <div class="stat">INT: <span id="intStat">0</span></div>
-    <div class="stat">FOC: <span id="focStat">0</span></div>
+  <div id="usernameScreen" class="active">
+    <h1>Enter Your Username</h1>
+    <input type="text" id="usernameInput" placeholder="Username" />
+    <button onclick="startAnimation()">Enter</button>
   </div>
-</div>
 
-<!-- Script -->
-<script>
-  function startTraining() {
-    const username = document.getElementById('usernameInput').value.trim();
-    if (username === '') return;
+  <div id="animationScreen" style="display:none;text-align:center;padding:50px;font-size:2em;">
+    <p>Hollow Purple...</p>
+  </div>
 
-    localStorage.setItem('username', username);
-    localStorage.setItem('seenIntro', 'true');
+  <div id="mainContent">
+    <h1>Welcome, <span id="displayUsername"></span></h1>
 
-    document.getElementById('usernamePage').classList.add('hidden');
-    const anim = document.getElementById('animation');
-    anim.classList.remove('hidden');
+    <div class="stats">
+      <div class="stat"><h3>STR</h3><p id="stat-str">0</p></div>
+      <div class="stat"><h3>STA</h3><p id="stat-sta">0</p></div>
+      <div class="stat"><h3>COM</h3><p id="stat-com">0</p></div>
+      <div class="stat"><h3>INT</h3><p id="stat-int">0</p></div>
+      <div class="stat"><h3>FOC</h3><p id="stat-foc">0</p></div>
+    </div>
 
-    setTimeout(() => {
-      anim.classList.add('hidden');
-      document.getElementById('homePage').classList.remove('hidden');
-      document.getElementById('displayUsername').innerText = "Welcome, " + username;
-    }, 3000);
-  }
+    <div class="section">
+      <h2>Today's Training Log</h2>
+      <div class="exercise-log">
+        <label>Push-ups (1 STR)</label><input type="text" id="pushups" placeholder="e.g., 100" />
+        <label>Squats (1 STR)</label><input type="text" id="squats" />
+        <label>Crunches (1 STR)</label><input type="text" id="crunches" />
+        <label>Punches (1 COM)</label><input type="text" id="punches" />
+        <label>Kicks (1 COM)</label><input type="text" id="kicks" />
+        <label>1 km Running (2 STA)</label><input type="text" id="running" />
+        <label>10 min Meditate (1 FOC)</label><input type="text" id="meditate" />
+        <label>10 min Dodge (1 COM)</label><input type="text" id="dodge" />
+        <label>Plank (Always 100 XP)</label><input type="text" id="plank" />
+      </div>
+      <button onclick="submitTraining()">Submit Training</button>
+      <p id="xpDisplay">XP: 0 | Level: 1 | Title: Student</p>
+    </div>
+  </div>
 
-  window.onload = function () {
-    const savedUser = localStorage.getItem('username');
-    const seenIntro = localStorage.getItem('seenIntro');
+  <script>
+    let xp = 0;
+    let level = 1;
+    let stats = { STR: 0, STA: 0, COM: 0, INT: 0, FOC: 0 };
+    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level"].concat(Array(91).fill("Ascended"));
 
-    if (savedUser && seenIntro === 'true') {
-      document.getElementById('usernamePage').classList.add('hidden');
-      document.getElementById('homePage').classList.remove('hidden');
-      document.getElementById('displayUsername').innerText = "Welcome back, " + savedUser;
+    function startAnimation() {
+      const username = document.getElementById("usernameInput").value;
+      if (username) {
+        localStorage.setItem("username", username);
+        document.getElementById("usernameScreen").style.display = "none";
+        document.getElementById("animationScreen").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("animationScreen").style.display = "none";
+          document.getElementById("mainContent").classList.add("active");
+          document.getElementById("displayUsername").textContent = username;
+        }, 4000);
+      }
     }
-  }
-</script>
 
+    function calculateXP() {
+      let totalXP = 0;
+      let statGain = { STR: 0, STA: 0, COM: 0, INT: 0, FOC: 0 };
+
+      if (parseInt(pushups.value) >= 100) statGain.STR++;
+      if (parseInt(squats.value) >= 100) statGain.STR++;
+      if (parseInt(crunches.value) >= 100) statGain.STR++;
+      if (parseInt(punches.value) >= 100) statGain.COM++;
+      if (parseInt(kicks.value) >= 100) statGain.COM++;
+      if (parseInt(running.value) >= 1) statGain.STA += 2;
+      if (parseInt(meditate.value) >= 10) statGain.FOC++;
+      if (parseInt(dodge.value) >= 10) statGain.COM++;
+      if (parseInt(plank.value) > 0) totalXP += 100;
+
+      return { totalXP, statGain };
+    }
+
+    function submitTraining() {
+      const result = calculateXP();
+      xp += result.totalXP;
+      for (let key in result.statGain) {
+        stats[key] += result.statGain[key];
+      }
+
+      while (xp >= level * 100) {
+        xp -= level * 100;
+        level++;
+      }
+
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById("stat-str").textContent = stats.STR;
+      document.getElementById("stat-sta").textContent = stats.STA;
+      document.getElementById("stat-com").textContent = stats.COM;
+      document.getElementById("stat-int").textContent = stats.INT;
+      document.getElementById("stat-foc").textContent = stats.FOC;
+      document.getElementById("xpDisplay").textContent = `XP: ${xp} | Level: ${level} | Title: ${titles[level - 1]}`;
+    }
+
+    window.onload = () => {
+      const username = localStorage.getItem("username");
+      if (username) {
+        document.getElementById("usernameScreen").style.display = "none";
+        document.getElementById("mainContent").classList.add("active");
+        document.getElementById("displayUsername").textContent = username;
+      } else {
+        document.getElementById("usernameScreen").classList.add("active");
+      }
+    };
+  </script>
 </body>
 </html>
