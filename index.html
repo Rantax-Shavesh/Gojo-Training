@@ -151,7 +151,7 @@
         <label>Forearm Training (100 for +1 STR)</label><input type="text" id="forearm" />
         <label>Punches (100 for +1 COM)</label><input type="text" id="punches" />
         <label>Kicks (100 for +1 COM)</label><input type="text" id="kicks" />
-        <label>1 km Running (100 units = +1 STA)</label><input type="text" id="running" />
+        <label>1 km Running (1 units = +1 STA)</label><input type="text" id="running" />
         <label>10 min Meditate (10 mins = +1 INT)</label><input type="text" id="meditate" />
         <label>10 min Dodge (100 for +1 COM)</label><input type="text" id="dodge" />
         <label>Plank (Always 100 XP)</label><input type="text" id="plank" />
@@ -208,7 +208,7 @@
       if (parseFloat(forearm.value) >= 100) stats.STR++;
       if (parseFloat(punches.value) >= 100) stats.COM++;
       if (parseFloat(kicks.value) >= 100) stats.COM++;
-      if (parseFloat(running.value) >= 100) stats.STA++;
+      if (parseFloat(running.value) >= 1) stats.STA++;
       if (parseFloat(meditate.value) >= 10) stats.INT++;
       if (parseFloat(dodge.value) >= 100) stats.COM++;
       if (parseFloat(plank.value) > 0) totalXP += 100;
