@@ -3,187 +3,243 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Training - Gojo Theme</title>
+  <title>Shadow Warrior Training</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #purpleAnimation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: radial-gradient(circle, #a64dff 0%, #1a0033 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      animation: fadeOut 4s forwards;
+      z-index: 1000;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
+
+    #usernameInputPage, #mainContent {
+      display: none;
+      padding: 2rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .section {
+      margin: 1.5rem 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    input, button {
+      font-family: inherit;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="purpleAnimation">Hollow Purple!</div>
+  <div id="usernameInputPage">
+    <h1>Enter Your Shadow Warrior Name</h1>
+    <input type="text" id="usernameInput" placeholder="Enter username...">
+    <button onclick="saveUsername()">Start</button>
+  </div>
+  <div id="mainContent">
+    <h1>Welcome, <span id="displayUsername"></span></h1>
+    <div class="section">
+      <h2>Stats</h2>
+      <div class="stats-grid">
+        <div class="card">Level: <span id="level">1</span></div>
+        <div class="card">XP: <span id="xp">0</span></div>
+        <div class="card">STR: <span id="statSTR">0</span></div>
+        <div class="card">STA: <span id="statSTA">0</span></div>
+        <div class="card">COM: <span id="statCOM">0</span></div>
+        <div class="card">INT: <span id="statINT">0</span></div>
+      </div>
+      <div class="card" style="margin-top:1rem; text-align:center;">
+        Title: <span id="title">Rookie</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Train</h2>
+      <form onsubmit="submitTraining(); return false;">
+        <input type="number" id="pushups" placeholder="Pushups">
+        <input type="number" id="crunches" placeholder="Crunches">
+        <input type="number" id="squats" placeholder="Squats">
+        <input type="number" id="burpees" placeholder="Burpees">
+        <input type="number" id="combos" placeholder="Combos">
+        <button type="submit">Train</button>
+      </form>
+    </div>
+
+    <div class="section">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList" style="list-style:none; padding:0;"></ul>
+    </div>
+  </div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAaU9NsFtO2MPuWBwBHEjlqh4fDJhBKcoU",
-      authDomain: "gojo-training-website.firebaseapp.com",
-      projectId: "gojo-training-website",
-      storageBucket: "gojo-training-website.appspot.com",
-      messagingSenderId: "891184046270",
-      appId: "1:891184046270:web:a26debfbbae9ffd5a87eef",
-      measurementId: "G-6SL7013P7P",
-      databaseURL: "https://gojo-training-website-default-rtdb.asia-southeast1.firebasedatabase.app"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MSG_ID",
+      appId: "YOUR_APP_ID",
+      databaseURL: "YOUR_DATABASE_URL"
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let username = localStorage.getItem('username') || prompt("Enter your username:");
-    localStorage.setItem('username', username);
-    document.title = `Training - ${username}`;
+    const database = getDatabase(app);
 
     let xp = 0, level = 1;
     let stats = { STR: 0, STA: 0, COM: 0, INT: 0 };
-    let exerciseProgress = { pushups: 0, squats: 0, crunches: 0, forearm: 0, punches: 0, kicks: 0, running: 0, meditate: 0, dodge: 0 };
 
-    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level", "Ascended"];
+    function saveUsername() {
+      const name = document.getElementById('usernameInput').value.trim();
+      if (!name) return;
+      localStorage.setItem('username', name);
+      location.reload();
+    }
 
-    function getTitle(level) {
-      if (level >= 100) return "Ascended";
-      if (level >= 90) return "Gojo-Level";
-      if (level >= 80) return "Limitless User";
-      if (level >= 70) return "Hollow Purple Master";
-      if (level >= 60) return "Six Eyes";
-      if (level >= 50) return "Domain User";
-      if (level >= 40) return "Special Grade";
-      if (level >= 30) return "Grade 1";
-      if (level >= 20) return "Semi Grade 1";
-      if (level >= 10) return "First Grade";
-      return "Student";
+    function getTitle(lv) {
+      if (lv < 5) return "Rookie";
+      if (lv < 10) return "Apprentice";
+      if (lv < 20) return "Shadow Fighter";
+      if (lv < 40) return "Elite";
+      if (lv < 70) return "Demon Slayer";
+      return "Shadow Monarch";
     }
 
     function updateUI() {
-      document.getElementById("stat-str").textContent = stats.STR;
-      document.getElementById("stat-sta").textContent = stats.STA;
-      document.getElementById("stat-com").textContent = stats.COM;
-      document.getElementById("stat-int").textContent = stats.INT;
-
-      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${getTitle(level)}`;
-      document.getElementById("xpBar").style.width = `${(xp / (level * 100)) * 100}%`;
+      document.getElementById('xp').textContent = xp;
+      document.getElementById('level').textContent = level;
+      document.getElementById('statSTR').textContent = stats.STR;
+      document.getElementById('statSTA').textContent = stats.STA;
+      document.getElementById('statCOM').textContent = stats.COM;
+      document.getElementById('statINT').textContent = stats.INT;
+      document.getElementById('title').textContent = getTitle(level);
     }
 
-    function saveData() {
-      set(ref(db, 'users/' + username), {
-        username,
-        level,
-        xp,
-        stats,
-        exerciseProgress,
+    function submitTraining() {
+      const p = parseInt(document.getElementById('pushups').value) || 0;
+      const c = parseInt(document.getElementById('crunches').value) || 0;
+      const s = parseInt(document.getElementById('squats').value) || 0;
+      const b = parseInt(document.getElementById('burpees').value) || 0;
+      const co = parseInt(document.getElementById('combos').value) || 0;
+
+      const total = p + c + s + b + co;
+      xp += total;
+      stats.STR += p + s;
+      stats.STA += b;
+      stats.COM += co;
+      stats.INT += c;
+      level = Math.floor(xp / 100) + 1;
+
+      updateUI();
+
+      const username = localStorage.getItem('username') || 'Unknown';
+      set(ref(database, 'users/' + username), {
+        username: username,
+        level: level,
+        xp: xp,
+        stats: stats,
         title: getTitle(level)
       });
     }
 
-    function loadData() {
-      const userRef = ref(db, 'users/' + username);
+    function loadUserData() {
+      const username = localStorage.getItem('username');
+      if (!username) return;
+
+      const userRef = ref(database, 'users/' + username);
       get(userRef).then(snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           xp = data.xp || 0;
           level = data.level || 1;
-          stats = data.stats || stats;
-          exerciseProgress = data.exerciseProgress || exerciseProgress;
-        }
-        updateUI();
-      });
-    }
-
-    window.submitTraining = function () {
-      const inputs = ['pushups', 'squats', 'crunches', 'forearm', 'punches', 'kicks', 'running', 'meditate', 'dodge', 'plank'];
-      let gainedXP = 0;
-
-      inputs.forEach(key => {
-        const value = parseInt(document.getElementById(key).value) || 0;
-        gainedXP += value * 0.1;
-        if (key !== 'plank') {
-          exerciseProgress[key] += value;
+          stats = data.stats || { STR: 0, STA: 0, COM: 0, INT: 0 };
+          updateUI();
         }
       });
-
-      function updateStat(key, required, statKey) {
-        while (exerciseProgress[key] >= required) {
-          stats[statKey]++;
-          exerciseProgress[key] -= required;
-        }
-      }
-
-      updateStat('pushups', 100, 'STR');
-      updateStat('squats', 100, 'STR');
-      updateStat('crunches', 100, 'STR');
-      updateStat('forearm', 100, 'STR');
-      updateStat('punches', 100, 'COM');
-      updateStat('kicks', 100, 'COM');
-      updateStat('running', 100, 'STA');
-      updateStat('dodge', 100, 'COM');
-      updateStat('meditate', 10, 'INT');
-
-      xp += gainedXP;
-      while (xp >= level * 100) {
-        xp -= level * 100;
-        level++;
-      }
-
-      saveData();
-      updateUI();
     }
 
     function loadLeaderboard() {
-      const lbRef = ref(db, 'users');
-      onValue(lbRef, snapshot => {
-        const container = document.createElement("div");
-        container.className = 'section';
-        const list = document.createElement("ol");
+      const leaderboardRef = ref(database, 'users');
+      onValue(leaderboardRef, snapshot => {
+        const list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
         const users = [];
 
         snapshot.forEach(child => {
-          users.push(child.val());
+          const data = child.val();
+          users.push(data);
         });
 
         users.sort((a, b) => b.level - a.level);
 
         users.forEach(user => {
-          const item = document.createElement("li");
-          item.textContent = `${user.username} | ${user.title || getTitle(user.level)} | Level ${user.level}`;
-          list.appendChild(item);
+          const li = document.createElement("li");
+          li.textContent = `${user.username} | ${user.title} | Level ${user.level}`;
+          list.appendChild(li);
         });
-
-        container.appendChild(document.createElement("h2")).textContent = "Leaderboard";
-        container.appendChild(list);
-        document.body.appendChild(container);
       });
     }
 
     window.onload = () => {
-      loadData();
-      loadLeaderboard();
+      const animation = document.getElementById("purpleAnimation");
+      setTimeout(() => {
+        animation.style.display = "none";
+        const name = localStorage.getItem('username');
+        if (!name) {
+          document.getElementById("usernameInputPage").style.display = 'block';
+        } else {
+          document.getElementById("mainContent").style.display = 'block';
+          document.getElementById("displayUsername").textContent = name;
+          loadUserData();
+          loadLeaderboard();
+          updateUI();
+        }
+      }, 4000);
     }
   </script>
-  <style>
-    /* [Your CSS stays unchanged] */
-  </style>
-</head>
-<body>
-  <div id="mainContent" class="active">
-    <h1>Six Eyes Training</h1>
-    <div class="stats">
-      <div class="stat"><h3>STR</h3><p id="stat-str">0</p></div>
-      <div class="stat"><h3>STA</h3><p id="stat-sta">0</p></div>
-      <div class="stat"><h3>COM</h3><p id="stat-com">0</p></div>
-      <div class="stat"><h3>INT</h3><p id="stat-int">0</p></div>
-    </div>
-    <div class="section">
-      <div id="xpBarContainer"><div id="xpBar"></div></div>
-      <p id="xpDisplay" style="text-align:center; font-size:1.2em;">XP: 0 | Level: 1 | Title: Student</p>
-    </div>
-    <div class="section">
-      <h2>Today's Training Log</h2>
-      <div class="exercise-log">
-        <label>Push-ups (100 for +1 STR)</label><input type="text" id="pushups" />
-        <label>Squats (100 for +1 STR)</label><input type="text" id="squats" />
-        <label>Crunches (100 for +1 STR)</label><input type="text" id="crunches" />
-        <label>Forearm Training (100 for +1 STR)</label><input type="text" id="forearm" />
-        <label>Punches (100 for +1 COM)</label><input type="text" id="punches" />
-        <label>Kicks (100 for +1 COM)</label><input type="text" id="kicks" />
-        <label>1 km Running (100 for +1 STA)</label><input type="text" id="running" />
-        <label>10 min Meditate (10 for +1 INT)</label><input type="text" id="meditate" />
-        <label>10 min Dodge (100 for +1 COM)</label><input type="text" id="dodge" />
-        <label>Plank (XP Only)</label><input type="text" id="plank" />
-      </div>
-      <button onclick="submitTraining()">Submit Training</button>
-    </div>
-  </div>
 </body>
 </html>
