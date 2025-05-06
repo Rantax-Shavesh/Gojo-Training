@@ -4,105 +4,155 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shadow Training - Gojo Theme</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAaU9NsFtO2MPuWBwBHEjlqh4fDJhBKcoU",
+      authDomain: "gojo-training-website.firebaseapp.com",
+      projectId: "gojo-training-website",
+      storageBucket: "gojo-training-website.appspot.com",
+      messagingSenderId: "891184046270",
+      appId: "1:891184046270:web:a26debfbbae9ffd5a87eef",
+      measurementId: "G-6SL7013P7P",
+      databaseURL: "https://gojo-training-website-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let username = localStorage.getItem('username') || prompt("Enter your username:");
+    localStorage.setItem('username', username);
+    document.title = `Training - ${username}`;
+
+    let xp = 0, level = 1;
+    let stats = { STR: 0, STA: 0, COM: 0, INT: 0 };
+    let exerciseProgress = { pushups: 0, squats: 0, crunches: 0, forearm: 0, punches: 0, kicks: 0, running: 0, meditate: 0, dodge: 0 };
+
+    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level", "Ascended"];
+
+    function getTitle(level) {
+      if (level >= 100) return "Ascended";
+      if (level >= 90) return "Gojo-Level";
+      if (level >= 80) return "Limitless User";
+      if (level >= 70) return "Hollow Purple Master";
+      if (level >= 60) return "Six Eyes";
+      if (level >= 50) return "Domain User";
+      if (level >= 40) return "Special Grade";
+      if (level >= 30) return "Grade 1";
+      if (level >= 20) return "Semi Grade 1";
+      if (level >= 10) return "First Grade";
+      return "Student";
+    }
+
+    function updateUI() {
+      document.getElementById("stat-str").textContent = stats.STR;
+      document.getElementById("stat-sta").textContent = stats.STA;
+      document.getElementById("stat-com").textContent = stats.COM;
+      document.getElementById("stat-int").textContent = stats.INT;
+
+      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${getTitle(level)}`;
+      document.getElementById("xpBar").style.width = `${(xp / (level * 100)) * 100}%`;
+    }
+
+    function saveData() {
+      set(ref(db, 'users/' + username), {
+        username,
+        level,
+        xp,
+        stats,
+        exerciseProgress,
+        title: getTitle(level)
+      });
+    }
+
+    function loadData() {
+      const userRef = ref(db, 'users/' + username);
+      get(userRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          xp = data.xp || 0;
+          level = data.level || 1;
+          stats = data.stats || stats;
+          exerciseProgress = data.exerciseProgress || exerciseProgress;
+        }
+        updateUI();
+      });
+    }
+
+    window.submitTraining = function () {
+      const inputs = ['pushups', 'squats', 'crunches', 'forearm', 'punches', 'kicks', 'running', 'meditate', 'dodge', 'plank'];
+      let gainedXP = 0;
+
+      inputs.forEach(key => {
+        const value = parseInt(document.getElementById(key).value) || 0;
+        gainedXP += value * 0.1;
+        if (key !== 'plank') {
+          exerciseProgress[key] += value;
+        }
+      });
+
+      function updateStat(key, required, statKey) {
+        while (exerciseProgress[key] >= required) {
+          stats[statKey]++;
+          exerciseProgress[key] -= required;
+        }
+      }
+
+      updateStat('pushups', 100, 'STR');
+      updateStat('squats', 100, 'STR');
+      updateStat('crunches', 100, 'STR');
+      updateStat('forearm', 100, 'STR');
+      updateStat('punches', 100, 'COM');
+      updateStat('kicks', 100, 'COM');
+      updateStat('running', 100, 'STA');
+      updateStat('dodge', 100, 'COM');
+      updateStat('meditate', 10, 'INT');
+
+      xp += gainedXP;
+      while (xp >= level * 100) {
+        xp -= level * 100;
+        level++;
+      }
+
+      saveData();
+      updateUI();
+    }
+
+    function loadLeaderboard() {
+      const lbRef = ref(db, 'users');
+      onValue(lbRef, snapshot => {
+        const container = document.createElement("div");
+        container.className = 'section';
+        const list = document.createElement("ol");
+        const users = [];
+
+        snapshot.forEach(child => {
+          users.push(child.val());
+        });
+
+        users.sort((a, b) => b.level - a.level);
+
+        users.forEach(user => {
+          const item = document.createElement("li");
+          item.textContent = `${user.username} | ${user.title || getTitle(user.level)} | Level ${user.level}`;
+          list.appendChild(item);
+        });
+
+        container.appendChild(document.createElement("h2")).textContent = "Leaderboard";
+        container.appendChild(list);
+        document.body.appendChild(container);
+      });
+    }
+
+    window.onload = () => {
+      loadData();
+      loadLeaderboard();
+    }
+  </script>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a1a);
-      color: white;
-    }
-    #usernameScreen, #mainContent {
-      display: none;
-      padding: 20px;
-    }
-    #usernameScreen.active, #mainContent.active {
-      display: block;
-    }
-    h1, h2, h3 {
-      text-align: center;
-    }
-    h1 {
-      color: #6ec1ff;
-      font-size: 2.5em;
-    }
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-    }
-    .section {
-      background-color: #111;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 20px;
-      max-width: 750px;
-      box-shadow: 0 0 25px #00f2ff55;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 100%;
-      border-radius: 10px;
-      border: none;
-      margin-bottom: 15px;
-      background-color: #222;
-      color: #fff;
-    }
-    button {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 30px;
-      font-size: 1em;
-      background-color: #00bfff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      background-color: #0099cc;
-    }
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .stat {
-      flex: 1 1 120px;
-      text-align: center;
-      padding: 15px;
-      background: #000000cc;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0077b699 inset;
-    }
-    .stat h3 {
-      margin: 0;
-      color: #00bfff;
-    }
-    .stat p {
-      margin: 5px 0 0;
-      font-size: 1.3em;
-      font-weight: bold;
-    }
-    #xpBarContainer {
-      margin: 20px auto;
-      width: 80%;
-      background: #333;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 10px #00bfff;
-    }
-    #xpBar {
-      height: 20px;
-      background: linear-gradient(to right, #6ec1ff, #0077ff);
-      width: 0%;
-      transition: width 0.5s;
-    }
+    /* [Your CSS stays unchanged] */
   </style>
 </head>
 <body>
@@ -135,85 +185,5 @@
       <button onclick="submitTraining()">Submit Training</button>
     </div>
   </div>
-  <script>
-    let xp = parseFloat(localStorage.getItem('xp')) || 0;
-    let level = parseInt(localStorage.getItem('level')) || 1;
-    let stats = JSON.parse(localStorage.getItem('stats')) || { STR: 0, STA: 0, COM: 0, INT: 0 };
-    let exerciseProgress = JSON.parse(localStorage.getItem('exerciseProgress')) || { pushups: 0, squats: 0, crunches: 0, forearm: 0, punches: 0, kicks: 0, running: 0, meditate: 0, dodge: 0 };
-
-    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level", "Ascended"];
-
-    function getTitle(level) {
-      if (level >= 100) return "Ascended";
-      if (level >= 90) return "Gojo-Level";
-      if (level >= 80) return "Limitless User";
-      if (level >= 70) return "Hollow Purple Master";
-      if (level >= 60) return "Six Eyes";
-      if (level >= 50) return "Domain User";
-      if (level >= 40) return "Special Grade";
-      if (level >= 30) return "Grade 1";
-      if (level >= 20) return "Semi Grade 1";
-      if (level >= 10) return "First Grade";
-      return "Student";
-    }
-
-    function submitTraining() {
-      const inputs = ['pushups', 'squats', 'crunches', 'forearm', 'punches', 'kicks', 'running', 'meditate', 'dodge', 'plank'];
-      let gainedXP = 0;
-
-      inputs.forEach(key => {
-        const value = parseInt(document.getElementById(key).value) || 0;
-        gainedXP += value * 0.1;
-
-        if (key !== 'plank') {
-          exerciseProgress[key] += value;
-        }
-      });
-
-      function updateStat(key, required, statKey) {
-        while (exerciseProgress[key] >= required) {
-          stats[statKey]++;
-          exerciseProgress[key] -= required;
-        }
-      }
-
-      updateStat('pushups', 100, 'STR');
-      updateStat('squats', 100, 'STR');
-      updateStat('crunches', 100, 'STR');
-      updateStat('forearm', 100, 'STR');
-      updateStat('punches', 100, 'COM');
-      updateStat('kicks', 100, 'COM');
-      updateStat('running', 100, 'STA');
-      updateStat('dodge', 100, 'COM');
-      updateStat('meditate', 10, 'INT');
-
-      xp += gainedXP;
-      while (xp >= level * 100) {
-        xp -= level * 100;
-        level++;
-      }
-
-      localStorage.setItem('xp', xp);
-      localStorage.setItem('level', level);
-      localStorage.setItem('stats', JSON.stringify(stats));
-      localStorage.setItem('exerciseProgress', JSON.stringify(exerciseProgress));
-
-      updateUI();
-    }
-
-    function updateUI() {
-      document.getElementById("stat-str").textContent = stats.STR;
-      document.getElementById("stat-sta").textContent = stats.STA;
-      document.getElementById("stat-com").textContent = stats.COM;
-      document.getElementById("stat-int").textContent = stats.INT;
-
-      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${getTitle(level)}`;
-
-      let percent = (xp / (level * 100)) * 100;
-      document.getElementById("xpBar").style.width = percent + "%";
-    }
-
-    window.onload = updateUI;
-  </script>
 </body>
 </html>
