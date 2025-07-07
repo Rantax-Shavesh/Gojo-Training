@@ -1,219 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Training - Gojo Theme</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow Resistance Combat Tracker</title>
   <style>
     body {
-      margin: 0;
+      background-color: #0b0c10;
+      color: #dceaff;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a1a);
-      color: white;
+      margin: 0;
+      padding: 0;
     }
-    #usernameScreen, #mainContent {
-      display: none;
+    header {
+      background-color: #0e1f3e;
       padding: 20px;
-    }
-    #usernameScreen.active, #mainContent.active {
-      display: block;
-    }
-    h1, h2, h3 {
       text-align: center;
+      border-bottom: 2px solid #1e4b75;
     }
-    h1 {
-      color: #6ec1ff;
-      font-size: 2.5em;
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #48a9f8;
     }
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
+    .container {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
     }
     .section {
-      background-color: #111;
-      margin: 20px auto;
-      padding: 25px;
-      border-radius: 20px;
-      max-width: 750px;
-      box-shadow: 0 0 25px #00f2ff55;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 100%;
+      background-color: #12151a;
+      border: 1px solid #2a3c54;
+      padding: 15px;
       border-radius: 10px;
-      border: none;
-      margin-bottom: 15px;
-      background-color: #222;
-      color: #fff;
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #48a9f8;
+    }
+    .card, .stats-grid div {
+      background-color: #1a1d25;
+      border-left: 5px solid #48a9f8;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
     }
     button {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 30px;
-      font-size: 1em;
-      background-color: #00bfff;
+      background-color: #1e4b75;
+      color: white;
       border: none;
-      border-radius: 10px;
+      padding: 8px 16px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
-    button:hover {
-      background-color: #0099cc;
-    }
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .stat {
-      flex: 1 1 120px;
-      text-align: center;
+    .hidden { display: none; }
+    .task-item { display: flex; align-items: center; margin: 5px 0; }
+    .task-item input { margin-right: 10px; }
+    pre {
+      background-color: #1a1d25;
+      color: #dceaff;
+      white-space: pre-wrap;
       padding: 15px;
-      background: #000000cc;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0077b699 inset;
-    }
-    .stat h3 {
-      margin: 0;
-      color: #00bfff;
-    }
-    .stat p {
-      margin: 5px 0 0;
-      font-size: 1.3em;
-      font-weight: bold;
-    }
-    #xpBarContainer {
-      margin: 20px auto;
-      width: 80%;
-      background: #333;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 10px #00bfff;
-    }
-    #xpBar {
-      height: 20px;
-      background: linear-gradient(to right, #6ec1ff, #0077ff);
-      width: 0%;
-      transition: width 0.5s;
+      border-radius: 10px;
+      max-height: 500px;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <div id="mainContent" class="active">
-    <h1>Six Eyes Training</h1>
-    <div class="stats">
-      <div class="stat"><h3>STR</h3><p id="stat-str">0</p></div>
-      <div class="stat"><h3>STA</h3><p id="stat-sta">0</p></div>
-      <div class="stat"><h3>COM</h3><p id="stat-com">0</p></div>
-      <div class="stat"><h3>INT</h3><p id="stat-int">0</p></div>
-    </div>
+  <header>
+    <h1>🛡️ Shadow Resistance Combat Tracker 🗡️</h1>
+    <p><strong>Name:</strong> Shavesh Kumar | <strong>Codename:</strong> Rantaxboy</p>
+    <p>📅 Start Date: May 28, 2025 | ⭐ Level: <span id="level">1</span> | <span id="rank">🟦 Shadow Trainee</span> | 🎯 XP: <span id="xp">0.0</span> / <span id="nextXP">10</span></p>
+  </header>
+
+  <div class="container">
     <div class="section">
-      <div id="xpBarContainer"><div id="xpBar"></div></div>
-      <p id="xpDisplay" style="text-align:center; font-size:1.2em;">XP: 0 | Level: 1 | Title: Student</p>
-    </div>
-    <div class="section">
-      <h2>Today's Training Log</h2>
-      <div class="exercise-log">
-        <label>Push-ups (100 for +1 STR)</label><input type="text" id="pushups" />
-        <label>Squats (100 for +1 STR)</label><input type="text" id="squats" />
-        <label>Crunches (100 for +1 STR)</label><input type="text" id="crunches" />
-        <label>Forearm Training (100 for +1 STR)</label><input type="text" id="forearm" />
-        <label>Punches (100 for +1 COM)</label><input type="text" id="punches" />
-        <label>Kicks (100 for +1 COM)</label><input type="text" id="kicks" />
-        <label>1 km Running (100 for +1 STA)</label><input type="text" id="running" />
-        <label>10 min Meditate (10 for +1 INT)</label><input type="text" id="meditate" />
-        <label>10 min Dodge (100 for +1 COM)</label><input type="text" id="dodge" />
-        <label>Plank (XP Only)</label><input type="text" id="plank" />
+      <h2>📊 Stat Overview</h2>
+      <div class="stats-grid" id="stats">
+        <div>🟥 STR: <span id="str">5</span></div>
+        <div>🟦 TECH: <span id="tech">5</span></div>
+        <div>🟩 STM: <span id="stm">5</span></div>
+        <div>🟨 BODY: <span id="body">5</span></div>
+        <div>🟧 SPD: <span id="spd">5</span></div>
+        <div>🟪 RES: <span id="res">5</span></div>
+        <div>⬜️ DSC: <span id="dsc">5</span></div>
       </div>
-      <button onclick="submitTraining()">Submit Training</button>
+      <button onclick="resetDSC()">Reset DSC to 0</button>
+    </div>
+
+    <div class="section">
+      <h2>⚔️ Daily Tracker</h2>
+      <p id="dayLabel">Today is <strong>Day 1</strong></p>
+      <label><input type="checkbox" id="dayCheckbox"> Mark as done</label>
+    </div>
+
+    <div class="section">
+      <h2>🎖️ Bonus Task Tracker</h2>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="1"> 100 Push-Ups</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="3">200 Crunches + 100 Crunches</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="1"> 5 Min Wall Sit</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 3 Min Sparring</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="1"> 50 Diamond Push-Ups</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="1"> Fore Arm Exercise 100 each</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 50 x New Combo</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 100 x High speed Combo</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="spd" data-xp="1"> 3 max sprints </div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="1"> 2 km run</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="1"> 100 Burpees</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="1"> Plank</div>
+      
+    </div>
+
+    <div class="section">
+      <button onclick="togglePlan()">Show/Hide Full Training Plan</button>
+      <div id="planSection" class="hidden">
+        <pre id="planContent">
+⚔️ SHADOW RESISTANCE HARDCORE PLAN (DIVIDED-DAY SPLIT)
+...[plan content already included]...
+        </pre>
+      </div>
     </div>
   </div>
+
   <script>
-    let xp = parseFloat(localStorage.getItem('xp')) || 0;
-    let level = parseInt(localStorage.getItem('level')) || 1;
-    let stats = JSON.parse(localStorage.getItem('stats')) || { STR: 0, STA: 0, COM: 0, INT: 0 };
-    let exerciseProgress = JSON.parse(localStorage.getItem('exerciseProgress')) || { pushups: 0, squats: 0, crunches: 0, forearm: 0, punches: 0, kicks: 0, running: 0, meditate: 0, dodge: 0 };
+    const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
+    const dayStats = [
+      { str: 2, res: 1, body: 2, dsc: 1 },
+      { tech: 2, spd: 1, res: 1, dsc: 1  },
+      { body: 2, str: 1, res: 1, dsc: 1  },
+      { stm: 2, spd: 1, res: 1, dsc: 1  },
+      { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1  },
+      { res: 2, tech: 1, dsc: 1  },
+      {}
+    ];
 
-    const titles = ["Student", "First Grade", "Semi Grade 1", "Grade 1", "Special Grade", "Domain User", "Six Eyes", "Hollow Purple Master", "Limitless User", "Gojo-Level", "Ascended"];
+    const rankList = [
+      "🟦 Shadow Trainee", "🟩 Combat Rookie", "🟨 Resistance Fighter", "🟧 Street Shadow",
+      "🟥 Silent Striker", "🟪 Phantom Warrior", "🟫 Shadow Elite", "⚫ Ghostblade",
+      "🔥 Demon Hunter", "⚔️ Shadow Executioner", "🌑 Night Reaper", "👑 Legendary Warlord", "⭐ Apex Shadow"
+    ];
+    const thresholds = [1, 6, 11, 16, 21, 31, 41, 51, 61, 71, 81, 91, 100];
+    const levelTable = [10,10,10,10,10,10,10,10,10,10,15,15,15,15,15,20,20,20,20,20,25,25,25,25,25,30,30,30,30,30,40,40,40,40,40,50,50,50,50,50,60,60,60,60,60,75,75,75,75,75,90,90,90,90,90,100];
 
-    function getTitle(level) {
-      if (level >= 100) return "Ascended";
-      if (level >= 90) return "Gojo-Level";
-      if (level >= 80) return "Limitless User";
-      if (level >= 70) return "Hollow Purple Master";
-      if (level >= 60) return "Six Eyes";
-      if (level >= 50) return "Domain User";
-      if (level >= 40) return "Special Grade";
-      if (level >= 30) return "Grade 1";
-      if (level >= 20) return "Semi Grade 1";
-      if (level >= 10) return "First Grade";
-      return "Student";
+    let currentDay = 0;
+    let xp = 0;
+    let level = 1;
+
+    document.getElementById('dayCheckbox').addEventListener('change', function () {
+      if (!this.checked) return;
+      xp += dayXP[currentDay];
+      updateStats(dayStats[currentDay]);
+      updateXP();
+      currentDay = (currentDay + 1) % 7;
+      document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+      this.checked = false;
+    });
+
+    function updateStats(stats) {
+      for (const key in stats) {
+        const elem = document.getElementById(key);
+        const newVal = parseInt(elem.textContent) + stats[key];
+        elem.textContent = newVal;
+      }
     }
 
-    function submitTraining() {
-      const inputs = ['pushups', 'squats', 'crunches', 'forearm', 'punches', 'kicks', 'running', 'meditate', 'dodge', 'plank'];
-      let gainedXP = 0;
-
-      inputs.forEach(key => {
-        const value = parseInt(document.getElementById(key).value) || 0;
-        gainedXP += value * 0.1;
-
-        if (key !== 'plank') {
-          exerciseProgress[key] += value;
-        }
-      });
-
-      function updateStat(key, required, statKey) {
-        while (exerciseProgress[key] >= required) {
-          stats[statKey]++;
-          exerciseProgress[key] -= required;
-        }
-      }
-
-      updateStat('pushups', 100, 'STR');
-      updateStat('squats', 100, 'STR');
-      updateStat('crunches', 100, 'STR');
-      updateStat('forearm', 100, 'STR');
-      updateStat('punches', 100, 'COM');
-      updateStat('kicks', 100, 'COM');
-      updateStat('running', 100, 'STA');
-      updateStat('dodge', 100, 'COM');
-      updateStat('meditate', 10, 'INT');
-
-      xp += gainedXP;
-      while (xp >= level * 100) {
-        xp -= level * 100;
+    function updateXP() {
+      while (xp >= levelTable[level - 1]) {
+        xp -= levelTable[level - 1];
         level++;
       }
-
-      localStorage.setItem('xp', xp);
-      localStorage.setItem('level', level);
-      localStorage.setItem('stats', JSON.stringify(stats));
-      localStorage.setItem('exerciseProgress', JSON.stringify(exerciseProgress));
-
-      updateUI();
+      document.getElementById('xp').textContent = xp.toFixed(1);
+      document.getElementById('level').textContent = level;
+      document.getElementById('nextXP').textContent = levelTable[level - 1];
+      updateRank();
     }
 
-    function updateUI() {
-      document.getElementById("stat-str").textContent = stats.STR;
-      document.getElementById("stat-sta").textContent = stats.STA;
-      document.getElementById("stat-com").textContent = stats.COM;
-      document.getElementById("stat-int").textContent = stats.INT;
-
-      document.getElementById("xpDisplay").textContent = `XP: ${xp.toFixed(1)} | Level: ${level} | Title: ${getTitle(level)}`;
-
-      let percent = (xp / (level * 100)) * 100;
-      document.getElementById("xpBar").style.width = percent + "%";
+    function updateRank() {
+      for (let i = thresholds.length - 1; i >= 0; i--) {
+        if (level >= thresholds[i]) {
+          document.getElementById('rank').textContent = rankList[i];
+          break;
+        }
+      }
     }
 
-    window.onload = updateUI;
+    document.querySelectorAll('.bonus').forEach(cb => {
+      cb.addEventListener('change', function () {
+        if (this.checked) {
+          const stat = this.dataset.stat;
+          const xpGain = parseFloat(this.dataset.xp);
+          const elem = document.getElementById(stat);
+          elem.textContent = parseInt(elem.textContent) + 1;
+          xp += xpGain;
+          updateXP();
+        }
+      });
+    });
+
+    function togglePlan() {
+      const plan = document.getElementById('planSection');
+      plan.classList.toggle('hidden');
+    }
+
+    setInterval(() => {
+      document.querySelectorAll('.bonus').forEach(cb => cb.checked = false);
+    }, 1000 * 60 * 60 * 12);
+    
+    function resetDSC() {
+  document.getElementById("dsc").textContent = "0";
+}
+
   </script>
 </body>
 </html>
