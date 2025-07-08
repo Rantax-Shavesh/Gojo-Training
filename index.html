@@ -129,146 +129,131 @@
     </div>
   </div>
 
-  <script>
-    const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
-    const dayStats = [
-      { str: 2, res: 1, body: 2, dsc: 1 },
-      { tech: 2, spd: 1, res: 1, dsc: 1  },
-      { body: 2, str: 1, res: 1, dsc: 1  },
-      { stm: 2, spd: 1, res: 1, dsc: 1  },
-      { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1  },
-      { res: 2, tech: 1, dsc: 1  },
-      {}
-    ];
+<script>
+  const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
+  const dayStats = [
+    { str: 2, res: 1, body: 2, dsc: 1 },
+    { tech: 2, spd: 1, res: 1, dsc: 1 },
+    { body: 2, str: 1, res: 1, dsc: 1 },
+    { stm: 2, spd: 1, res: 1, dsc: 1 },
+    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1 },
+    { res: 2, tech: 1, dsc: 1 },
+    {}
+  ];
 
-    const rankList = [
-      "🟦 Shadow Trainee", "🟩 Combat Rookie", "🟨 Resistance Fighter", "🟧 Street Shadow",
-      "🟥 Silent Striker", "🟪 Phantom Warrior", "🟫 Shadow Elite", "⚫ Ghostblade",
-      "🔥 Demon Hunter", "⚔️ Shadow Executioner", "🌑 Night Reaper", "👑 Legendary Warlord", "⭐ Apex Shadow"
-    ];
-    const thresholds = [1, 6, 11, 16, 21, 31, 41, 51, 61, 71, 81, 91, 100];
-    const levelTable = [10,10,10,10,10,10,10,10,10,10,15,15,15,15,15,20,20,20,20,20,25,25,25,25,25,30,30,30,30,30,40,40,40,40,40,50,50,50,50,50,60,60,60,60,60,75,75,75,75,75,90,90,90,90,90,100];
+  const rankList = [
+    "🟦 Shadow Trainee", "🟩 Combat Rookie", "🟨 Resistance Fighter", "🟧 Street Shadow",
+    "🟥 Silent Striker", "🟪 Phantom Warrior", "🟫 Shadow Elite", "⚫ Ghostblade",
+    "🔥 Demon Hunter", "⚔️ Shadow Executioner", "🌑 Night Reaper", "👑 Legendary Warlord", "⭐ Apex Shadow"
+  ];
+  const thresholds = [1, 6, 11, 16, 21, 31, 41, 51, 61, 71, 81, 91, 100];
+  const levelTable = [10,10,10,10,10,10,10,10,10,10,15,15,15,15,15,20,20,20,20,20,25,25,25,25,25,30,30,30,30,30,40,40,40,40,40,50,50,50,50,50,60,60,60,60,60,75,75,75,75,75,90,90,90,90,90,100];
 
-    let currentDay = 0;
-    let xp = 0;
-    let level = 1;
+  let currentDay = 0;
+  let xp = 0;
+  let level = 1;
 
-    document.getElementById('dayCheckbox').addEventListener('change', function () {
-      if (!this.checked) return;
-      xp += dayXP[currentDay];
-      updateStats(dayStats[currentDay]);
-      updateXP();
-      currentDay = (currentDay + 1) % 7;
-      document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
-      this.checked = false;
-    });
-
-    function updateStats(stats) {
-      for (const key in stats) {
-        const elem = document.getElementById(key);
-        const newVal = parseInt(elem.textContent) + stats[key];
-        elem.textContent = newVal;
-      }
-    }
-
-    function updateXP() {
-      while (xp >= levelTable[level - 1]) {
-        xp -= levelTable[level - 1];
-        level++;
-      }
-      document.getElementById('xp').textContent = xp.toFixed(1);
-      document.getElementById('level').textContent = level;
-      document.getElementById('nextXP').textContent = levelTable[level - 1];
-      updateRank();
-    }
-
-    function updateRank() {
-      for (let i = thresholds.length - 1; i >= 0; i--) {
-        if (level >= thresholds[i]) {
-          document.getElementById('rank').textContent = rankList[i];
-          break;
-        }
-      }
-    }
-
-    document.querySelectorAll('.bonus').forEach(cb => {
-      cb.addEventListener('change', function () {
-        if (this.checked) {
-          const stat = this.dataset.stat;
-          const xpGain = parseFloat(this.dataset.xp);
-          const elem = document.getElementById(stat);
-          elem.textContent = parseInt(elem.textContent) + 1;
-          xp += xpGain;
-          updateXP();
-        }
-      });
-    });
-
-    function togglePlan() {
-      const plan = document.getElementById('planSection');
-      plan.classList.toggle('hidden');
-    }
-
-    setInterval(() => {
-      document.querySelectorAll('.bonus').forEach(cb => cb.checked = false);
-    }, 1000 * 60 * 60 * 12);
-    
-    function resetDSC() {
-  document.getElementById("dsc").textContent = "0";
-}
-function saveProgress() {
-  const data = {
-    xp, level, currentDay,
-    str: document.getElementById('str').textContent,
-    tech: document.getElementById('tech').textContent,
-    stm: document.getElementById('stm').textContent,
-    body: document.getElementById('body').textContent,
-    spd: document.getElementById('spd').textContent,
-    res: document.getElementById('res').textContent,
-    dsc: document.getElementById('dsc').textContent
-  };
-  localStorage.setItem('shadowProgress', JSON.stringify(data));
-}
-    window.addEventListener('DOMContentLoaded', () => {
-  const saved = JSON.parse(localStorage.getItem('shadowProgress'));
-  if (saved) {
-    xp = saved.xp;
-    level = saved.level;
-    currentDay = saved.currentDay;
-    document.getElementById('str').textContent = saved.str;
-    document.getElementById('tech').textContent = saved.tech;
-    document.getElementById('stm').textContent = saved.stm;
-    document.getElementById('body').textContent = saved.body;
-    document.getElementById('spd').textContent = saved.spd;
-    document.getElementById('res').textContent = saved.res;
-    document.getElementById('dsc').textContent = saved.dsc;
-    updateXP();
-    document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+  function saveProgress() {
+    const data = {
+      xp, level, currentDay,
+      str: document.getElementById('str').textContent,
+      tech: document.getElementById('tech').textContent,
+      stm: document.getElementById('stm').textContent,
+      body: document.getElementById('body').textContent,
+      spd: document.getElementById('spd').textContent,
+      res: document.getElementById('res').textContent,
+      dsc: document.getElementById('dsc').textContent
+    };
+    localStorage.setItem('shadowProgress', JSON.stringify(data));
   }
-});
-    function saveProgress() {
-  const data = {
-    xp, level, currentDay,
-    str: document.getElementById('str').textContent,
-    tech: document.getElementById('tech').textContent,
-    stm: document.getElementById('stm').textContent,
-    body: document.getElementById('body').textContent,
-    spd: document.getElementById('spd').textContent,
-    res: document.getElementById('res').textContent,
-    dsc: document.getElementById('dsc').textContent
-  };
-  localStorage.setItem('shadowProgress', JSON.stringify(data));
-}
-    document.getElementById('dayCheckbox').addEventListener('change', function () {
-  if (!this.checked) return;
-  xp += dayXP[currentDay];
-  updateStats(dayStats[currentDay]);
-  updateXP();
-  currentDay = (currentDay + 1) % 7;
-  document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
-  this.checked = false;
-  saveProgress(); // Add here
-});
-  </script>
+
+  function updateStats(stats) {
+    for (const key in stats) {
+      const elem = document.getElementById(key);
+      const newVal = parseInt(elem.textContent) + stats[key];
+      elem.textContent = newVal;
+    }
+    saveProgress(); // ✅ Save after stat update
+  }
+
+  function updateXP() {
+    while (xp >= levelTable[level - 1]) {
+      xp -= levelTable[level - 1];
+      level++;
+    }
+    document.getElementById('xp').textContent = xp.toFixed(1);
+    document.getElementById('level').textContent = level;
+    document.getElementById('nextXP').textContent = levelTable[level - 1];
+    updateRank();
+    saveProgress(); // ✅ Save after XP update
+  }
+
+  function updateRank() {
+    for (let i = thresholds.length - 1; i >= 0; i--) {
+      if (level >= thresholds[i]) {
+        document.getElementById('rank').textContent = rankList[i];
+        break;
+      }
+    }
+  }
+
+  function togglePlan() {
+    const plan = document.getElementById('planSection');
+    plan.classList.toggle('hidden');
+  }
+
+  function resetDSC() {
+    document.getElementById("dsc").textContent = "0";
+    saveProgress(); // ✅ Save after DSC reset
+  }
+
+  document.getElementById('dayCheckbox').addEventListener('change', function () {
+    if (!this.checked) return;
+    xp += dayXP[currentDay];
+    updateStats(dayStats[currentDay]);
+    updateXP();
+    currentDay = (currentDay + 1) % 7;
+    document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+    this.checked = false;
+    saveProgress();
+  });
+
+  document.querySelectorAll('.bonus').forEach(cb => {
+    cb.addEventListener('change', function () {
+      if (this.checked) {
+        const stat = this.dataset.stat;
+        const xpGain = parseFloat(this.dataset.xp);
+        const elem = document.getElementById(stat);
+        elem.textContent = parseInt(elem.textContent) + 1;
+        xp += xpGain;
+        updateXP();
+        saveProgress(); // ✅ Save after bonus
+      }
+    });
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = JSON.parse(localStorage.getItem('shadowProgress'));
+    if (saved) {
+      xp = saved.xp;
+      level = saved.level;
+      currentDay = saved.currentDay;
+      document.getElementById('str').textContent = saved.str;
+      document.getElementById('tech').textContent = saved.tech;
+      document.getElementById('stm').textContent = saved.stm;
+      document.getElementById('body').textContent = saved.body;
+      document.getElementById('spd').textContent = saved.spd;
+      document.getElementById('res').textContent = saved.res;
+      document.getElementById('dsc').textContent = saved.dsc;
+      updateXP();
+      document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+    }
+  });
+
+  // Auto-uncheck bonus every 12 hours
+  setInterval(() => {
+    document.querySelectorAll('.bonus').forEach(cb => cb.checked = false);
+  }, 1000 * 60 * 60 * 12);
+</script>
 </body>
 </html>
