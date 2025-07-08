@@ -216,7 +216,59 @@
     function resetDSC() {
   document.getElementById("dsc").textContent = "0";
 }
-
+function saveProgress() {
+  const data = {
+    xp, level, currentDay,
+    str: document.getElementById('str').textContent,
+    tech: document.getElementById('tech').textContent,
+    stm: document.getElementById('stm').textContent,
+    body: document.getElementById('body').textContent,
+    spd: document.getElementById('spd').textContent,
+    res: document.getElementById('res').textContent,
+    dsc: document.getElementById('dsc').textContent
+  };
+  localStorage.setItem('shadowProgress', JSON.stringify(data));
+}
+    window.addEventListener('DOMContentLoaded', () => {
+  const saved = JSON.parse(localStorage.getItem('shadowProgress'));
+  if (saved) {
+    xp = saved.xp;
+    level = saved.level;
+    currentDay = saved.currentDay;
+    document.getElementById('str').textContent = saved.str;
+    document.getElementById('tech').textContent = saved.tech;
+    document.getElementById('stm').textContent = saved.stm;
+    document.getElementById('body').textContent = saved.body;
+    document.getElementById('spd').textContent = saved.spd;
+    document.getElementById('res').textContent = saved.res;
+    document.getElementById('dsc').textContent = saved.dsc;
+    updateXP();
+    document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+  }
+});
+    function saveProgress() {
+  const data = {
+    xp, level, currentDay,
+    str: document.getElementById('str').textContent,
+    tech: document.getElementById('tech').textContent,
+    stm: document.getElementById('stm').textContent,
+    body: document.getElementById('body').textContent,
+    spd: document.getElementById('spd').textContent,
+    res: document.getElementById('res').textContent,
+    dsc: document.getElementById('dsc').textContent
+  };
+  localStorage.setItem('shadowProgress', JSON.stringify(data));
+}
+    document.getElementById('dayCheckbox').addEventListener('change', function () {
+  if (!this.checked) return;
+  xp += dayXP[currentDay];
+  updateStats(dayStats[currentDay]);
+  updateXP();
+  currentDay = (currentDay + 1) % 7;
+  document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+  this.checked = false;
+  saveProgress(); // Add here
+});
   </script>
 </body>
 </html>
