@@ -145,6 +145,25 @@
   measurementId: "G-PEDDZL20ZG"
 };
 firebase.initializeApp(firebaseConfig);
+  // Load saved progress from Firebase on page load
+firebase.database().ref("users/rantaxboy").once("value").then(snapshot => {
+  if (snapshot.exists()) {
+    const saved = snapshot.val();
+    xp = saved.xp;
+    level = saved.level;
+    currentDay = saved.currentDay;
+    document.getElementById('str').textContent = saved.str;
+    document.getElementById('tech').textContent = saved.tech;
+    document.getElementById('stm').textContent = saved.stm;
+    document.getElementById('body').textContent = saved.body;
+    document.getElementById('spd').textContent = saved.spd;
+    document.getElementById('res').textContent = saved.res;
+    document.getElementById('dsc').textContent = saved.dsc;
+    updateXP();
+    document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
+  }
+});
+
 const database = firebase.database();
 
   const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
