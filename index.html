@@ -269,9 +269,10 @@ function saveProgress() {
     });
   });
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const saved = JSON.parse(localStorage.getItem('shadowProgress'));
-    if (saved) {
+window.addEventListener('DOMContentLoaded', () => {
+  firebase.database().ref("users/rantaxboy").once("value").then(snapshot => {
+    if (snapshot.exists()) {
+      const saved = snapshot.val();
       xp = saved.xp;
       level = saved.level;
       currentDay = saved.currentDay;
@@ -286,6 +287,8 @@ function saveProgress() {
       document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
     }
   });
+});
+
 
   // Auto-uncheck bonus every 12 hours
   setInterval(() => {
