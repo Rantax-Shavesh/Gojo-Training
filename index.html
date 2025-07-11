@@ -72,6 +72,10 @@
       overflow-y: auto;
     }
   </style>
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 </head>
 <body>
   <header>
@@ -130,6 +134,19 @@
   </div>
 
 <script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyBpF3wO8ChJRrTp89ASkbuTZUy9lYMLtM4",
+  authDomain: "shadow-tracker-c689c.firebaseapp.com",
+  databaseURL: "https://shadow-tracker-c689c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shadow-tracker-c689c",
+  storageBucket: "shadow-tracker-c689c.appspot.com",
+  messagingSenderId: "167534113613",
+  appId: "1:167534113613:web:f0e046519a12d6c1ae7d04",
+  measurementId: "G-PEDDZL20ZG"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
   const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
   const dayStats = [
     { str: 2, res: 1, body: 2, dsc: 1 },
@@ -152,20 +169,21 @@
   let currentDay = 0;
   let xp = 0;
   let level = 1;
+  
+function saveProgress() {
+  const data = {
+    xp, level, currentDay,
+    str: document.getElementById('str').textContent,
+    tech: document.getElementById('tech').textContent,
+    stm: document.getElementById('stm').textContent,
+    body: document.getElementById('body').textContent,
+    spd: document.getElementById('spd').textContent,
+    res: document.getElementById('res').textContent,
+    dsc: document.getElementById('dsc').textContent
+  };
+  firebase.database().ref("users/rantaxboy").set(data);
+}
 
-  function saveProgress() {
-    const data = {
-      xp, level, currentDay,
-      str: document.getElementById('str').textContent,
-      tech: document.getElementById('tech').textContent,
-      stm: document.getElementById('stm').textContent,
-      body: document.getElementById('body').textContent,
-      spd: document.getElementById('spd').textContent,
-      res: document.getElementById('res').textContent,
-      dsc: document.getElementById('dsc').textContent
-    };
-    localStorage.setItem('shadowProgress', JSON.stringify(data));
-  }
 
   function updateStats(stats) {
     for (const key in stats) {
