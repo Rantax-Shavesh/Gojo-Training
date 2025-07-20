@@ -101,8 +101,19 @@
 
     <div class="section">
       <h2>⚔️ Daily Tracker</h2>
-      <p id="dayLabel">Today is <strong>Day 1</strong></p>
-      <label><input type="checkbox" id="dayCheckbox"> Mark as done</label>
+      <div>
+  <h3>🥊 Hardcore Plan</h3>
+  <p id="hardcoreLabel">Hardcore Day: <strong>1</strong></p>
+  <label><input type="checkbox" id="hardcoreCheckbox"> Mark Hardcore Day Complete</label>
+</div>
+
+<br>
+
+<div>
+  <h3>🐉 Bruce Lee Plan</h3>
+  <p id="bruceLabel">Bruce Day: <strong>1</strong></p>
+  <label><input type="checkbox" id="bruceCheckbox"> Mark Bruce Day Complete</label>
+</div>
     </div>
 
     <div class="section">
@@ -266,6 +277,10 @@ firebase.initializeApp(firebaseConfig);
 firebase.database().ref("users/rantaxboy").once("value").then(snapshot => {
   if (snapshot.exists()) {
     const saved = snapshot.val();
+    hardcoreDay = saved.hardcoreDay || 0;
+bruceDay = saved.bruceDay || 0;
+document.getElementById('hardcoreLabel').innerHTML = `Hardcore Day: <strong>${hardcoreDay + 1}</strong>`;
+document.getElementById('bruceLabel').innerHTML = `Bruce Day: <strong>${bruceDay + 1}</strong>`;
     xp = saved.xp;
     level = saved.level;
     currentDay = saved.currentDay;
@@ -320,6 +335,21 @@ function saveProgress() {
   firebase.database().ref("users/rantaxboy").set(data);
 }
 
+  function saveProgress() {
+  const data = {
+    xp, level, currentDay,
+    str: document.getElementById('str').textContent,
+    tech: document.getElementById('tech').textContent,
+    stm: document.getElementById('stm').textContent,
+    body: document.getElementById('body').textContent,
+    spd: document.getElementById('spd').textContent,
+    res: document.getElementById('res').textContent,
+    dsc: document.getElementById('dsc').textContent,
+    hardcoreDay,
+    bruceDay
+  };
+  firebase.database().ref("users/rantaxboy").set(data);
+}
 
   function updateStats(stats) {
     for (const key in stats) {
@@ -361,16 +391,59 @@ function saveProgress() {
     saveProgress(); // ✅ Save after DSC reset
   }
 
-  document.getElementById('dayCheckbox').addEventListener('change', function () {
-    if (!this.checked) return;
-    xp += dayXP[currentDay];
-    updateStats(dayStats[currentDay]);
-    updateXP();
-    currentDay = (currentDay + 1) % 7;
-    document.getElementById('dayLabel').innerHTML = `Today is <strong>Day ${currentDay + 1}</strong>`;
-    this.checked = false;
-    saveProgress();
-  });
+  // Day tracking for both plans
+let hardcoreDay = 0;
+let bruceDay = 0;
+
+// --- Hardcore Plan Event ---
+document.getElementById('hardcoreCheckbox').addEventListener('change', function () {
+  if (!this.checked) return;
+
+  const hardcoreXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
+  const hardcoreStats = [
+    { str: 2, res: 1, body: 2, dsc: 1 },
+    { tech: 2, spd: 1, res: 1, dsc: 1 },
+    { body: 2, str: 1, res: 1, dsc: 1 },
+    { stm: 2, spd: 1, res: 1, dsc: 1 },
+    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1 },
+    { res: 2, tech: 1, dsc: 1 },
+    {} // Day 7: only XP
+  ];
+
+  xp += hardcoreXP[hardcoreDay];
+  updateStats(hardcoreStats[hardcoreDay]);
+  updateXP();
+
+  hardcoreDay = (hardcoreDay + 1) % 7;
+  document.getElementById('hardcoreLabel').innerHTML = `Hardcore Day: <strong>${hardcoreDay + 1}</strong>`;
+  this.checked = false;
+  saveProgress();
+});
+
+// --- Bruce Lee Plan Event ---
+document.getElementById('bruceCheckbox').addEventListener('change', function () {
+  if (!this.checked) return;
+
+  const bruceXP = [3.5, 4.0, 3.8, 4.2, 5.0, 4.5, 2.5];  // Example XP values
+  const bruceStats = [
+    { spd: 2, tech: 1, dsc: 1 },                         // Monday
+    { tech: 2, body: 1, spd: 1, dsc: 1 },                // Tuesday
+    { tech: 2, res: 1, dsc: 1 },                         // Wednesday
+    { tech: 1, spd: 1, res: 1, dsc: 1 },                 // Thursday
+    { str: 1, tech: 1, body: 2, res: 1, dsc: 1 },        // Friday
+    { tech: 1, str: 1, dsc: 1 },                         // Saturday
+    { res: 2, dsc: 1 }                                   // Sunday
+  ];
+
+  xp += bruceXP[bruceDay];
+  updateStats(bruceStats[bruceDay]);
+  updateXP();
+
+  bruceDay = (bruceDay + 1) % 7;
+  document.getElementById('bruceLabel').innerHTML = `Bruce Day: <strong>${bruceDay + 1}</strong>`;
+  this.checked = false;
+  saveProgress();
+});
 
   document.querySelectorAll('.bonus').forEach(cb => {
     cb.addEventListener('change', function () {
