@@ -124,18 +124,19 @@
 
     <div class="section">
       <h2>🎖️ Bonus Task Tracker</h2>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="1"> 100 Push-Ups</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="3">200 Crunches + 100 Crunches</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="1"> 5 Min Wall Sit</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 3 Min Sparring</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="1"> 50 Diamond Push-Ups</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="1"> Fore Arm Exercise 100 each</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 50 x New Combo</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="1"> 100 x High speed Combo</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="spd" data-xp="1"> 3 max sprints </div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="1"> 2 km run</div>
-      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="1"> 100 Burpees</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="10"> 100 Push-Ups</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="30">200 Crunches + 100 Crunches</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="5"> 5 Min Wall Sit</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="3"> 3 Min Sparring</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="str" data-xp="5"> 50 Diamond Push-Ups</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="body" data-xp="10"> Fore Arm Exercise 100 each</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="50"> 50 x New Combo</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="tech" data-xp="10"> 100 x High speed Combo</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="spd" data-xp="30"> 3 max sprints </div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="20"> 2 km run</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="stm" data-xp="100"> 100 Burpees</div>
       <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="1"> Plank</div>
+      <div class="task-item"><input type="checkbox" class="bonus" data-stat="res" data-xp="10"> Body Conditioning x 100</div>
       
     </div>
 
@@ -550,11 +551,11 @@ const database = firebase.database();
   const dayXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
   const dayStats = [
     { str: 2, res: 1, body: 2, dsc: 1 },
-    { tech: 2, spd: 1, res: 1, dsc: 1 },
-    { body: 2, str: 1, res: 1, dsc: 1 },
-    { stm: 2, spd: 1, res: 1, dsc: 1 },
-    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1 },
-    { res: 2, tech: 1, dsc: 1 },
+    { tech: 2, spd: 1, dsc: 1 },
+    { body: 2, str: 1, dsc: 1 },
+    { stm: 2, spd: 1,  dsc: 1 },
+    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, dsc: 1 },
+    { tech: 1, dsc: 1 },
     {}
   ];
 
@@ -564,7 +565,7 @@ const database = firebase.database();
     "🔥 Demon Hunter", "⚔️ Shadow Executioner", "🌑 Night Reaper", "👑 Legendary Warlord", "⭐ Apex Shadow"
   ];
   const thresholds = [1, 6, 11, 16, 21, 31, 41, 51, 61, 71, 81, 91, 100];
-  const levelTable = [100,100,100,100,100,100,100,100,100,100,150,150,150,150,150,200,200,200,200,200,250,250,250,250,25,30,30,30,30,30,40,40,40,40,40,50,50,50,50,50,60,60,60,60,60,75,75,75,75,75,90,90,90,90,90,100];
+  const levelTable = [100,100,100,100,100,100,100,100,100,100,150,150,150,150,150,200,200,200,200,200,250,250,250,250,250,300,300,300,300,300,400,400,400,400,400,500,500,500,500,500,600,600,600,600,600,750,750,750,750,750,900,900,900,900,900,1000];
 
   let currentDay = 0;
   let xp = 0;
@@ -656,12 +657,12 @@ document.getElementById('hardcoreCheckbox').addEventListener('change', function 
 
   const hardcoreXP = [4.8, 4.8, 3.5, 4.7, 8.4, 2.4, 1];
   const hardcoreStats = [
-    { str: 2, res: 1, body: 2, dsc: 1 },
-    { tech: 2, spd: 1, res: 1, dsc: 1 },
-    { body: 2, str: 1, res: 1, dsc: 1 },
-    { stm: 2, spd: 1, res: 1, dsc: 1 },
-    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, res: 1, dsc: 1 },
-    { res: 2, tech: 1, dsc: 1 },
+    { str: 2, body: 2, dsc: 1 },
+    { tech: 2, spd: 1, dsc: 1 },
+    { body: 2, str: 1, dsc: 1 },
+    { stm: 2, spd: 1, dsc: 1 },
+    { str: 1, tech: 1, stm: 1, body: 1, spd: 1, dsc: 1 },
+    { tech: 1, dsc: 1 },
     {} // Day 7: only XP
   ];
 
@@ -683,11 +684,11 @@ document.getElementById('bruceCheckbox').addEventListener('change', function () 
   const bruceStats = [
     { spd: 2, tech: 1, dsc: 1 },                         // Monday
     { tech: 2, body: 1, spd: 1, dsc: 1 },                // Tuesday
-    { tech: 2, res: 1, dsc: 1 },                         // Wednesday
-    { tech: 1, spd: 1, res: 1, dsc: 1 },                 // Thursday
-    { str: 1, tech: 1, body: 2, res: 1, dsc: 1 },        // Friday
+    { tech: 2, dsc: 1 },                                 // Wednesday
+    { tech: 1, spd: 1, dsc: 1 },                         // Thursday
+    { str: 1, tech: 1, body: 2, dsc: 1 },                // Friday
     { tech: 1, str: 1, dsc: 1 },                         // Saturday
-    { res: 2, dsc: 1 }                                   // Sunday
+    { dsc: 1 }                                           // Sunday
   ];
 
   xp += bruceXP[bruceDay];
