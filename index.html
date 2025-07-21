@@ -115,6 +115,12 @@
   <label><input type="checkbox" id="bruceCheckbox"> Mark Bruce Day Complete</label>
 </div>
     </div>
+    <!-- Skip Buttons -->
+<div>
+  <h3>⏩ Skip Day</h3>
+  <button onclick="skipHardcoreDay()">Skip Hardcore Day</button>
+  <button onclick="skipBruceDay()">Skip Bruce Day</button>
+</div>
 
     <div class="section">
       <h2>🎖️ Bonus Task Tracker</h2>
@@ -444,6 +450,19 @@ document.getElementById('bruceCheckbox').addEventListener('change', function () 
   this.checked = false;
   saveProgress();
 });
+  
+  function skipHardcoreDay() {
+  hardcoreDay = (hardcoreDay + 1) % 7;
+  document.getElementById('hardcoreLabel').innerHTML = `Hardcore Day: <strong>${hardcoreDay + 1}</strong>`;
+  saveProgress();
+}
+
+function skipBruceDay() {
+  bruceDay = (bruceDay + 1) % 7;
+  document.getElementById('bruceLabel').innerHTML = `Bruce Day: <strong>${bruceDay + 1}</strong>`;
+  saveProgress();
+}
+
 
   document.querySelectorAll('.bonus').forEach(cb => {
     cb.addEventListener('change', function () {
