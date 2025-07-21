@@ -116,7 +116,7 @@
 </div>
     </div>
     <!-- Skip Buttons -->
-<div calss="section">
+<div class="section">
   <h3>⏩ Skip Day</h3>
   <button onclick="skipHardcoreDay()">Skip Hardcore Day</button>
   <button onclick="skipBruceDay()">Skip Bruce Day</button>
@@ -141,8 +141,9 @@
 
     <div class="section">
       <button onclick="togglePlan()">Show/Hide Full Training Plan</button>
-      <div id="planSection" class="hidden">
-        <pre id="planContent">
+     <div id="shadowPlanSection" class="hidden">
+  <pre id="shadowPlanContent">
+
 ⚔️ SHADOW RESISTANCE HARDCORE PLAN (DIVIDED-DAY SPLIT)
 Each day is laser-focused but brutally hard.
 💪 Day 1 – 
@@ -265,8 +266,9 @@ Log stats, review body, take progress pic
         </pre>
       </div>
  <button onclick="togglePlan()">Show/Hide Bruce Lee Plan</button>
-      <div id="planSection" class="hidden">
-        <pre id="planContent">
+     <div id="brucePlanSection" class="hidden">
+  <pre id="brucePlanContent">
+
 🛡️ MONDAY – INTERCEPTION + SPEED
 Warm-Up:
 
@@ -450,8 +452,9 @@ Where must I refine? 🔬
         </pre>
       </div>
    <button onclick="togglePlan()">Combos</button>
-      <div id="planSection" class="hidden">
-        <pre id="planContent">
+     <div id="comboPlanSection" class="hidden">
+  <pre id="comboPlanContent">
+
 ⚔️ 1. Intercepting Jab → Lead Hook → Elbow Smash
 🥊 Purpose: Shock, disorient, and finish close.
 
@@ -627,10 +630,16 @@ function saveProgress() {
     }
   }
 
-  function togglePlan() {
-    const plan = document.getElementById('planSection');
-    plan.classList.toggle('hidden');
-  }
+function toggleShadowPlan() {
+  document.getElementById('shadowPlanSection').classList.toggle('hidden');
+}
+function toggleBrucePlan() {
+  document.getElementById('brucePlanSection').classList.toggle('hidden');
+}
+function toggleComboPlan() {
+  document.getElementById('comboPlanSection').classList.toggle('hidden');
+}
+
 
   function resetDSC() {
     document.getElementById("dsc").textContent = "0";
